@@ -7,6 +7,8 @@ import google.generativeai as genai
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_client = genai
 
+# search.py
+
 def search_documents(query, index, docs_info, query_embed_fn, top_k=3):
     query_vector = query_embed_fn(query)
     if query_vector is None or index is None:
@@ -14,20 +16,19 @@ def search_documents(query, index, docs_info, query_embed_fn, top_k=3):
 
     D, I = index.search(np.array([query_vector.astype("float32")]), top_k)
     results = []
-
     for score, idx in zip(D[0], I[0]):
         if idx < len(docs_info):
             doc_info = docs_info[idx]
             results.append({
                 "doc_id": doc_info["doc_id"],
-                "source": doc_info["source"],
-                "content_type": doc_info["content_type"],
-                "page": doc_info.get("page", 1),
+                # Use .get() with a default for missing keys
+                "source": doc_info.get("source", "Unknown Source"),
+                "content_type": doc_info.get("content_type", "text"),
+                "page": doc_info.get("page", None),
                 "similarity": 1 / (1 + score),
-                "content": doc_info.get("content"),
-                "preview": doc_info.get("preview"),
+                "content": doc_info.get("content", ""),
+                "preview": doc_info.get("preview", ""),
             })
-
     return results
 
 def answer_with_gemini(question, content):

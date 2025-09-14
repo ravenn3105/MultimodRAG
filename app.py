@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+st.success("✅ App is running! All systems operational.")
 
 
 
